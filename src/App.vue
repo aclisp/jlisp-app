@@ -1,11 +1,32 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/HelloWorld.vue";
+//import HelloWorld from "./components/HelloWorld.vue";
+import {
+  NLayout,
+  NLayoutHeader,
+  NLayoutContent,
+  NLayoutFooter,
+  NMenu,
+  type MenuOption,
+} from "naive-ui";
+import { h } from "vue";
+
+const menuOptions: MenuOption[] = [
+  {
+    label: () =>
+      h(RouterLink, { to: { name: "home" } }, { default: () => "Home" }),
+    key: "home",
+  },
+  {
+    label: () =>
+      h(RouterLink, { to: { name: "profile" } }, { default: () => "Profile" }),
+    key: "profile",
+  },
+];
 </script>
 
 <template>
-  <header>
-    <!-- <img
+  <!-- <img
       alt="Vue logo"
       class="logo"
       src="@/assets/logo.svg"
@@ -13,15 +34,14 @@ import HelloWorld from "./components/HelloWorld.vue";
       height="125"
     /> -->
 
-    <div>
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <NLayout>
+    <!-- <HelloWorld msg="You did it!" /> -->
+    <NLayoutHeader>
+      <NMenu :options="menuOptions" mode="horizontal" />
+    </NLayoutHeader>
+    <NLayoutContent>
+      <RouterView />
+    </NLayoutContent>
+    <NLayoutFooter>Footer</NLayoutFooter>
+  </NLayout>
 </template>

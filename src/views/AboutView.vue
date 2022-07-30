@@ -1,5 +1,7 @@
+<script setup lang="ts">
+import { NH1 } from "naive-ui";
+</script>
+
 <template>
-  <div>
-    <h1>This is an about page</h1>
-  </div>
+  <NH1>This is an about page</NH1>
 </template>
