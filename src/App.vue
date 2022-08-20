@@ -5,7 +5,7 @@ import {
   NLayout,
   NLayoutHeader,
   NLayoutContent,
-  NLayoutFooter,
+  //NLayoutFooter,
   NMenu,
   type MenuOption,
 } from "naive-ui";
@@ -42,6 +42,6 @@ const menuOptions: MenuOption[] = [
     <NLayoutContent>
       <RouterView />
     </NLayoutContent>
-    <NLayoutFooter>Footer</NLayoutFooter>
+    <!-- <NLayoutFooter>Footer</NLayoutFooter> -->
   </NLayout>
 </template>
