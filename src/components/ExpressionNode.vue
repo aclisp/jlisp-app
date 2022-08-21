@@ -34,6 +34,11 @@ const props = defineProps({
       </template>
     </details>
   </li>
+  <li v-if="props.node.type == 'list' && props.node.value.length == 0">
+    <details open>
+      <summary>&nbsp;</summary>
+    </details>
+  </li>
   <li v-if="props.node.type == 'symbol'">
     {{ props.node.value }}
   </li>
