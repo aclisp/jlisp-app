@@ -43,7 +43,7 @@ const props = defineProps({
     {{ props.node.value }}
   </li>
   <li v-if="props.node.type == 'object'">
-    {{ props.node.value }}
+    {{ props.node.value ?? "null" }}
   </li>
   <li v-if="props.node.type == 'array'">
     {{ props.node.value }}
