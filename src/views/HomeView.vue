@@ -13,9 +13,13 @@ export default defineComponent({
     const code = ref("");
     const json = ref("");
     const run = ref("");
+    const status = ref("success");
 
     const debouncedGetCodeJson = _.debounce(getCodeJson, 500);
     watch(code, debouncedGetCodeJson);
+
+    const debouncedRunCode = _.debounce(runCode, 500);
+    watch(code, debouncedRunCode);
 
     const node = computed(() => {
       try {
@@ -31,7 +35,9 @@ export default defineComponent({
       node,
       run,
       formatCode,
+      oneLineCode,
       runCode,
+      status,
     };
 
     async function getCodeJson(newCode: string) {
@@ -52,11 +58,26 @@ export default defineComponent({
       }
     }
 
+    async function oneLineCode() {
+      const res = await fetch("http://localhost:8080/formular/oneline", {
+        method: "POST",
+        body: code.value,
+      });
+      if (res.ok) {
+        code.value = await res.text();
+      }
+    }
+
     async function runCode() {
       const res = await fetch("http://localhost:8080/formular/eval", {
         method: "POST",
         body: code.value,
       });
+      if (res.ok) {
+        status.value = "success";
+      } else {
+        status.value = "warning";
+      }
       run.value = await res.text();
     }
   },
@@ -79,9 +100,16 @@ export default defineComponent({
   <NGrid :cols="2">
     <NGi>
       <NCard title="输入公式">
-        <NInput v-model:value="code" type="textarea" :rows="5" />
+        <NInput
+          v-model:value="code"
+          type="textarea"
+          :status="status"
+          :autosize="{
+            minRows: 3,
+          }"
+        />
         <NButton @click="formatCode" size="small">格式化</NButton>
-        <NButton @click="runCode" size="small">运算</NButton>
+        <NButton @click="oneLineCode" size="small">单行化</NButton>
       </NCard>
       <NCard title="运算结果" :bordered="false">
         <NCode :code="run" />
