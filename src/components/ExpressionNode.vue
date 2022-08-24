@@ -11,24 +11,28 @@ const props = defineProps({
   <li v-if="props.node.type == 'list' && props.node.value.length > 0">
     <details open>
       <template v-if="props.node.value[0].type == 'list'">
-        <summary>&nbsp;</summary>
+        <summary>
+          &nbsp; <sub>[{{ props.node.id }}]</sub>
+        </summary>
         <ul>
           <ExpressionNode
-            v-for="(node, index) in props.node.value"
+            v-for="node in props.node.value"
             :node="node"
-            :key="index"
+            :key="node.id"
           />
         </ul>
       </template>
       <template v-else>
         <summary>
-          {{ props.node.value[0].value }}
+          &nbsp; <sub>[{{ props.node.id }}]</sub>
+          {{ props.node.value[0].value ?? "null" }}
+          <sub>[{{ props.node.value[0].id }}]</sub>
         </summary>
         <ul>
           <ExpressionNode
-            v-for="(node, index) in props.node.value.slice(1)"
+            v-for="node in props.node.value.slice(1)"
             :node="node"
-            :key="index"
+            :key="node.id"
           />
         </ul>
       </template>
@@ -36,16 +40,18 @@ const props = defineProps({
   </li>
   <li v-if="props.node.type == 'list' && props.node.value.length == 0">
     <details open>
-      <summary>&nbsp;</summary>
+      <summary>
+        &nbsp; <sub>[{{ props.node.id }}]</sub>
+      </summary>
     </details>
   </li>
   <li v-if="props.node.type == 'symbol'">
-    {{ props.node.value }}
+    {{ props.node.value }} <sub>[{{ props.node.id }}]</sub>
   </li>
   <li v-if="props.node.type == 'object'">
-    {{ props.node.value ?? "null" }}
+    {{ props.node.value ?? "null" }} <sub>[{{ props.node.id }}]</sub>
   </li>
   <li v-if="props.node.type == 'array'">
-    {{ props.node.value }}
+    {{ props.node.value }} <sub>[{{ props.node.id }}]</sub>
   </li>
 </template>
