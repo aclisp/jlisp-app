@@ -10,20 +10,23 @@ import _ from "lodash";
 
 export default defineComponent({
   setup() {
+    // User input code
     const code = ref("");
-    const json = ref("");
-    const run = ref("");
-    const status = ref("success");
+    // JSON representation of user input code
+    const codeJson = ref("");
+    // Run result of the JSON representation
+    const runResult = ref("");
+    // Run status
+    const runStatus = ref("success");
 
-    const debouncedGetCodeJson = _.debounce(getCodeJson, 500);
-    watch(code, debouncedGetCodeJson);
+    // Convert user input code to JSON representation and run with this JSON representation.
+    const debouncedRun = _.debounce(getCodeJsonAndRun, 500);
+    watch(code, debouncedRun);
 
-    const debouncedRunCode = _.debounce(runCode, 500);
-    watch(code, debouncedRunCode);
-
-    const node = computed(() => {
+    // Visualization of the the JSON representation
+    const visualize = computed(() => {
       try {
-        return JSON.parse(json.value);
+        return JSON.parse(codeJson.value);
       } catch (e) {
         return {};
       }
@@ -31,21 +34,30 @@ export default defineComponent({
 
     return {
       code,
-      json,
-      node,
-      run,
+      codeJson,
+      visualize,
+      runResult,
+      runStatus,
       formatCode,
       oneLineCode,
-      runCode,
-      status,
     };
 
-    async function getCodeJson(newCode: string) {
+    async function getCodeJsonAndRun(newCode: string) {
       const res = await fetch("http://localhost:8080/formular/json", {
         method: "POST",
         body: newCode,
       });
-      json.value = await res.text();
+      codeJson.value = await res.text();
+
+      // run it
+      try {
+        // validate
+        JSON.parse(codeJson.value);
+        await runCode(codeJson.value);
+      } catch (e) {
+        runResult.value = "N/A";
+        runStatus.value = "warning";
+      }
     }
 
     async function formatCode() {
@@ -68,17 +80,18 @@ export default defineComponent({
       }
     }
 
-    async function runCode() {
+    async function runCode(json: string) {
       const res = await fetch("http://localhost:8080/formular/eval", {
         method: "POST",
-        body: code.value,
+        headers: { "Content-Type": "application/json" },
+        body: json,
       });
       if (res.ok) {
-        status.value = "success";
+        runStatus.value = "success";
       } else {
-        status.value = "warning";
+        runStatus.value = "warning";
       }
-      run.value = await res.text();
+      runResult.value = await res.text();
     }
   },
   components: {
@@ -103,7 +116,7 @@ export default defineComponent({
         <NInput
           v-model:value="code"
           type="textarea"
-          :status="status"
+          :status="runStatus"
           :autosize="{
             minRows: 3,
           }"
@@ -112,15 +125,15 @@ export default defineComponent({
         <NButton @click="oneLineCode" size="small">单行化</NButton>
       </NCard>
       <NCard title="运算结果" :bordered="false">
-        <NCode :code="run" />
+        <NCode :code="runResult" />
       </NCard>
       <NCard title="JSON" :bordered="false">
-        <NCode :code="json" language="JSON" />
+        <NCode :code="codeJson" language="JSON" />
       </NCard>
     </NGi>
     <NGi>
       <NCard title="可视化" :bordered="false">
-        <ExpressionTree :node="node"></ExpressionTree>
+        <ExpressionTree :node="visualize"></ExpressionTree>
       </NCard>
     </NGi>
   </NGrid>
