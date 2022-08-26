@@ -11,6 +11,15 @@ const idColor = {
   textColor: "#F8F8F8",
   borderColor: "#FFFF",
 };
+function safeValue(value: unknown) {
+  if (value === null) {
+    return "(null ptr)";
+  }
+  if (value === "") {
+    return "(empty string)";
+  }
+  return value;
+}
 </script>
 
 <template>
@@ -56,7 +65,7 @@ const idColor = {
     <!-- <sub>[{{ props.node.id }}]</sub> -->
   </li>
   <li v-if="props.node.type == 'object'">
-    {{ props.node.value ?? "null" }}
+    {{ safeValue(props.node.value) }}
     <!-- <sub>[{{ props.node.id }}]</sub> -->
   </li>
   <li v-if="props.node.type == 'array'">
