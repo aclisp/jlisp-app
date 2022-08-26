@@ -1,12 +1,25 @@
 <script lang="ts">
 //import TheWelcome from "@/components/TheWelcome.vue";
 import ExpressionTree from "@/components/ExpressionTree.vue";
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, reactive } from "vue";
 import { watch } from "vue";
 import { NCard, NGrid, NGi, NCode } from "naive-ui";
 import { NInput } from "naive-ui";
 import { NButton } from "naive-ui";
+import { NTable } from "naive-ui";
 import _ from "lodash";
+
+interface EvalStep {
+  depth: number;
+  form: string;
+  id: number;
+  value: string;
+  us: number;
+}
+
+interface EvalSteps {
+  value: EvalStep[];
+}
 
 export default defineComponent({
   setup() {
@@ -18,6 +31,8 @@ export default defineComponent({
     const runResult = ref("");
     // Run status
     const runStatus = ref("success");
+    // Run steps
+    const runSteps: EvalSteps = reactive({ value: [] });
 
     // Convert user input code to JSON representation and run with this JSON representation.
     const debouncedRun = _.debounce(getCodeJsonAndRun, 500);
@@ -38,6 +53,7 @@ export default defineComponent({
       visualize,
       runResult,
       runStatus,
+      runSteps,
       formatCode,
       oneLineCode,
     };
@@ -51,12 +67,16 @@ export default defineComponent({
 
       // run it
       try {
+        if (!res.ok) {
+          throw "Response is not ok";
+        }
         // validate
         JSON.parse(codeJson.value);
         await runCode(codeJson.value);
       } catch (e) {
-        runResult.value = "N/A";
         runStatus.value = "warning";
+        runResult.value = "N/A";
+        runSteps.value = [];
       }
     }
 
@@ -88,10 +108,14 @@ export default defineComponent({
       });
       if (res.ok) {
         runStatus.value = "success";
+        const json = await res.json();
+        runResult.value = json.value;
+        runSteps.value = json.steps;
       } else {
         runStatus.value = "warning";
+        runResult.value = await res.text();
+        runSteps.value = [];
       }
-      runResult.value = await res.text();
     }
   },
   components: {
@@ -102,6 +126,7 @@ export default defineComponent({
     NGrid,
     NGi,
     NCode,
+    NTable,
   },
 });
 </script>
@@ -127,9 +152,6 @@ export default defineComponent({
       <NCard title="运算结果" :bordered="false">
         <NCode :code="runResult" />
       </NCard>
-      <NCard title="JSON" :bordered="false">
-        <NCode :code="codeJson" language="JSON" />
-      </NCard>
     </NGi>
     <NGi>
       <NCard title="可视化" :bordered="false">
@@ -137,6 +159,31 @@ export default defineComponent({
       </NCard>
     </NGi>
   </NGrid>
+  <NCard v-if="runSteps.value.length > 0" title="运算过程" :bordered="false">
+    <NTable size="small" :single-line="false">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>命令</th>
+          <th>结果</th>
+          <th>时间（微秒）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(step, index) in runSteps.value" :key="index">
+          <td>{{ step.id }}</td>
+          <td>
+            <code>{{ "\xa0".repeat(step.depth) + step.form }}</code>
+          </td>
+          <td>{{ step.value }}</td>
+          <td>{{ step.us.toLocaleString() }}</td>
+        </tr>
+      </tbody>
+    </NTable>
+  </NCard>
+  <NCard title="JSON" :bordered="false">
+    <NCode :code="codeJson" language="JSON" />
+  </NCard>
 </template>
 
 <style scoped>
