@@ -190,4 +190,8 @@ export default defineComponent({
 .n-code {
   font-size: 10px;
 }
+
+.n-table {
+  font-size: 10px;
+}
 </style>
