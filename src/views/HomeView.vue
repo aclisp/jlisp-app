@@ -10,10 +10,11 @@ import { NTable } from "naive-ui";
 import _ from "lodash";
 
 interface EvalStep {
+  id: number;
   depth: number;
   form: string;
-  id: number;
   value: string;
+  type: string;
   us: number;
 }
 
@@ -166,6 +167,7 @@ export default defineComponent({
           <th>ID</th>
           <th>命令</th>
           <th>结果</th>
+          <th>类型</th>
           <th>时间（微秒）</th>
         </tr>
       </thead>
@@ -176,6 +178,7 @@ export default defineComponent({
             <code>{{ "\xa0".repeat(step.depth) + step.form }}</code>
           </td>
           <td>{{ step.value }}</td>
+          <td>{{ step.type }}</td>
           <td>{{ step.us.toLocaleString() }}</td>
         </tr>
       </tbody>
