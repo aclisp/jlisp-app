@@ -22,6 +22,8 @@ interface EvalSteps {
   value: EvalStep[];
 }
 
+type InputStatus = "success" | "error" | "warning";
+
 export default defineComponent({
   setup() {
     // User input code
@@ -31,7 +33,7 @@ export default defineComponent({
     // Run result of the JSON representation
     const runResult = ref("");
     // Run status
-    const runStatus = ref("success");
+    const runStatus = ref<InputStatus>("success");
     // Run steps
     const runSteps: EvalSteps = reactive({ value: [] });
 
