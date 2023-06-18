@@ -1,5 +1,5 @@
 {
-  "name": "mini-shop",
+  "name": "jlisp-app",
   "version": "0.0.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",

@@ -62,7 +62,7 @@ export default defineComponent({
     };
 
     async function getCodeJsonAndRun(newCode: string) {
-      const res = await fetch("http://localhost:8080/formular/json", {
+      const res = await fetch("http://localhost:8080/jlisp/json", {
         method: "POST",
         body: newCode,
       });
@@ -84,7 +84,7 @@ export default defineComponent({
     }
 
     async function formatCode() {
-      const res = await fetch("http://localhost:8080/formular/fmt", {
+      const res = await fetch("http://localhost:8080/jlisp/fmt", {
         method: "POST",
         body: code.value,
       });
@@ -94,7 +94,7 @@ export default defineComponent({
     }
 
     async function oneLineCode() {
-      const res = await fetch("http://localhost:8080/formular/oneline", {
+      const res = await fetch("http://localhost:8080/jlisp/oneline", {
         method: "POST",
         body: code.value,
       });
@@ -104,7 +104,7 @@ export default defineComponent({
     }
 
     async function runCode(json: string) {
-      const res = await fetch("http://localhost:8080/formular/eval", {
+      const res = await fetch("http://localhost:8080/jlisp/eval", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: json,
@@ -140,7 +140,7 @@ export default defineComponent({
   </main> -->
   <NGrid :cols="2">
     <NGi>
-      <NCard title="输入公式">
+      <NCard title="输入规则语言">
         <NInput
           v-model:value="code"
           type="textarea"
